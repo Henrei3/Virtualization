@@ -1,0 +1,17 @@
+services:
+  openldap:
+    image: osixia/openldap:latest
+    container_name: open_ldap
+    ports:
+      - 389:389
+      - 636:636
+    environment:
+      - LDAP_ORGANISATION="Alfonso"
+      - LDAP_DOMAIN="alfonso.com"
+      - LDAP_ADMIN_PASSWORD="Alf_admin"
+      - LDAP_BASE_DN="dc=fr,dc=univ-montp2,dc=iutmontp,dc=info,ou=People,ou=Etudiants,ou=Ann3"
+
+  php:
+    image: php-image
+    build: ./php
+  
