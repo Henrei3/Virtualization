@@ -6,12 +6,13 @@ services:
       - 389:389
       - 636:636
     environment:
-      - LDAP_ORGANISATION="Alfonso"
-      - LDAP_DOMAIN="alfonso.com"
-      - LDAP_ADMIN_PASSWORD="Alf_admin"
-      - LDAP_BASE_DN="dc=fr,dc=univ-montp2,dc=iutmontp,dc=info,ou=People,ou=Etudiants,ou=Ann3"
+      - LDAP_ORGANISATION="local-ldap"
+      - LDAP_DOMAIN="local.fr"
+      - LDAP_ADMIN_PASSWORD="alf_admin"
+      - LDAP_BASE_DN="dc=local,dc=fr"
+    hostname: ldap.localdirectory.fr
 
   php:
-    image: php-image
     build: ./php
-  
+    ports: 
+    - 80:80

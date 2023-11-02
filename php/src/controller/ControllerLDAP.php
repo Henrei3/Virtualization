@@ -1,9 +1,20 @@
 <?php
+namespace App\LDAP\controller;
 
-use App\LDAP\Config\Conf;
-use App\LDAP\Model\Repository\LDAPConnexion;
+use App\LDAP\config\Conf;
+use App\LDAP\controller\AbstractController;
+use App\LDAP\model\Repository\LDAPConnexion;
 
-class ControllerLDAP{
+class ControllerLDAP extends AbstractController{
+
+    public static function choixRepertoire(){
+        $repertoire_choisie = $_GET["dirOptions"];    
+        if(strcmp($repertoire_choisie,"Local") == 0){
+            LDAPConnexion::toggleLocal();
+            echo "Toggled Local";
+        }
+        self::afficheVue("authentification.php",["Pagetitle"=>"Authentification","directory"=>$repertoire_choisie]);
+    }
 
     public static function checkUser() {
         $ldap_login = "login";
@@ -32,8 +43,8 @@ class ControllerLDAP{
         //Pour chaque utilisateur, on recupere les informations utiles
         for ($i=0; $i < count($resultats) - 1 ; $i++) {
         //On stocke le login, nom/prnom, la classe et la promotion de l’utilisateur courant
-        $nomprenom = explode(" ", $resultats[$i][’displayname’][0]);
-        $promotion = explode("=", explode(",", $resultats[$i][’dn’])[1])[1];
+        $nomprenom = explode(" ", $resultats[$i]['displayname'][0]);
+        $promotion = explode("=", explode(",", $resultats[$i]['dn'])[1])[1];
         }
     }
     public static function disconnect(){
