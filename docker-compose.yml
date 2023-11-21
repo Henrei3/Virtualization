@@ -1,18 +1,31 @@
 services:
   openldap:
     image: osixia/openldap:latest
-    container_name: open_ldap
+    container_name: open_ldap 
+    hostname: openldap
     ports:
-      - 389:389
-      - 636:636
+      - "389:389"
+      - "636:636"
+    volumes:
+      - ./data/certificates:/container/service/slapd/assets/certs
+      - ./data/slapd/database/:var/lib/ldap
+      - ./data/slapd/config:/etc/ldap/slapd.d
     environment:
-      - LDAP_ORGANISATION="local-ldap"
-      - LDAP_DOMAIN="local.fr"
-      - LDAP_ADMIN_PASSWORD="alf_admin"
-      - LDAP_BASE_DN="dc=local,dc=fr"
-    hostname: ldap.localdirectory.fr
-
+      - LDAP_ORGANISATION=local
+      - LDAP_DOMAIN=local.fr
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=admin
+      - "LDAP_BASE_DN=dc=local,dc=fr"
+    networks:
+      - openldap
   php:
     build: ./php
     ports: 
     - 80:80
+    depends_on:
+      - openldap
+    networks:
+      - openldap
+networks:
+  openldap:
+    driver: bridge
