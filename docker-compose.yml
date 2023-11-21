@@ -11,16 +11,25 @@ services:
       - ./certs:/container/service/slapd/assets/certs
 
     environment:
-      - LDAP_ORGANISATION="ldap.fr"
-      - LDAP_DOMAIN="ldap.localdirectory.fr"
-      - LDAP_ADMIN_PASSWORD="alf_admin"
-      - LDAP_BASE_DN="dc=ldap,dc=localdirectory,dc=fr"
-    hostname: ldap.localdirectory.fr
-
+      - LDAP_ORGANISATION=ldap.fr
+      - LDAP_DOMAIN=ldap.local.fr
+      - LDAP_ADMIN_USERNAME=admin 
+      - LDAP_ADMIN_PASSWORD=admin
+      - "LDAP_BASE_DN=dc=ldap,dc=local,dc=fr"
+    hostname: ldap
+    networks:
+      - openldap
   php:
     build: ./php
     ports: 
-    - 90:80
+      - "80:80"
+    depends_on:
+      - openldap
+
 volumes: 
   ldap_data:
   ldap_config:
+
+networks:
+  openldap:
+    driver: bridge
