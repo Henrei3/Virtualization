@@ -11,21 +11,31 @@ class ControllerLDAP extends AbstractController{
         $repertoire_choisie = $_GET["dirOptions"];    
         if(strcmp($repertoire_choisie,"Local") == 0){
             LDAPConnexion::toggleLocal();
-            echo "Toggled Local";
+        }else{
+            LDAPConnexion::toogleIUT();
         }
         self::afficheVue("authentification.php",["Pagetitle"=>"Authentification","directory"=>$repertoire_choisie]);
     }
 
     public static function checkUser() {
-        $ldap_login = "login";
-        $ldap_password = "passwd";
-        $ldap_searchfilter = "(uid=$ldap_login)";
+        $ldap_login = $_GET["user"];
+        $ldap_password = $_GET["pass"];
+        $ldap_searchfilter = "(objectClass=*)";
+        
         $ldap_conn = LDAPConnexion::getInstance();
-        $search = ldap_search($ldap_conn, Conf::$ldap_basedn, $ldap_searchfilter, array());
+        $baseDn = LDAPConnexion::getBaseDn(); 
+
+        $bind_result = ldap_bind($ldap_conn, LDAPConnexion::getDnCustom("admin"), "passadmin");
+        if(!$bind_result){ echo "Bind avec admin échué";}
+
+        $search = ldap_search($ldap_conn, $baseDn, $ldap_searchfilter, array());
+        
         $user_result = ldap_get_entries($ldap_conn, $search);
         // on verifie que l’entree existe bien
+        print_r($user_result);
         $user_exist = $user_result["count"] == 1;
         // si l’utilisateur existe bien,
+        $passwd_ok = false;
         if($user_exist) {
         $dn = "uid=".$ldap_login.",ou=Ann1,ou=Etudiants,ou=People,dc=info,dc=iutmontp,dc=univ-montp2,dc=fr";
         $passwd_ok = ldap_bind(LDAPConnexion::getInstance(), $dn, $ldap_password);

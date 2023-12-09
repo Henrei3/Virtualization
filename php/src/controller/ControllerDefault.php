@@ -9,8 +9,9 @@ class ControllerDefault extends AbstractController{
 
 
     public static function chooseDirectory(){
-        self::afficheVue("directorySelection.php", ["Pagetitle" => "Select Local or IUT"]);
+        self::afficheVue("view.php", ["Pagetitle" => "Local or IUT", "cheminVueBody"=>"directorySelection.php"]);
     }
+
     public static function notFound(){
         self::afficheVue("NotFound.php");
     }

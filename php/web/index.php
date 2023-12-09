@@ -20,7 +20,6 @@ if(isset($_GET['action'])){
     if(isset($_GET['controller'])){
         $controller = $_GET['controller'];
         $ClassController ='App\LDAP\controller\Controller' . $controller;
-        echo $ClassController;
         if(class_exists($ClassController)){
             $ClassController::$action();
         }
