@@ -21,18 +21,14 @@ app.get('/', (req, res) => {
 // Route pour récupérer les logs
 app.get('/logs', async (req, res) => {
   try {
-<<<<<<< HEAD
     const { rows } = await pool.query('SELECT * FROM projet.logs');
-=======
-    const { rows } = await pool.query('SELECT * FROM project.logs');
->>>>>>> 86ca9da (api setup)
     res.json(rows);
   } catch (err) {
     res.status(500).send('Erreur lors de la récupération des logs');
   }
 });
 
-<<<<<<< HEAD
+
 
 // Route pour ajouter un log
 app.post('/logs', async (req, res) => {
@@ -50,18 +46,6 @@ app.post('/logs', async (req, res) => {
     }
   });
   
-=======
-// Route pour ajouter un log
-app.post('/logs', async (req, res) => {
-  const { user, date } = req.body;
-  try {
-    await pool.query('INSERT INTO project.logs (user, availability) VALUES ($1, $2)', [user, date]);
-    res.status(201).send('Log ajouté');
-  } catch (err) {
-    res.status(500).send('Erreur lors de l\'ajout du log');
-  }
-});
->>>>>>> 86ca9da (api setup)
 
 const PORT = 8080;
 app.listen(PORT, () => {
