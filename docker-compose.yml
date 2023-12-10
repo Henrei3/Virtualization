@@ -7,6 +7,10 @@ services:
       dockerfile: Dockerfile
     container_name: open_ldap
     hostname: openldap
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: open_ldap 
     ports:
       - 389:389
       - 636:636
