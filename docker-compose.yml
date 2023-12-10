@@ -21,14 +21,43 @@ services:
   php:
     build: ./php
     ports: 
-    - 90:80
+      - 90:80
     volumes:
       - ./php:/var/www/html
     networks:
       - open_ldap
+      
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./api/logs.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=securepassword
+      - POSTGRES_DB=mydatabase
+    networks:
+      - open_ldap
+
+  api:
+    build: ./api
+    ports:
+      - 8080:8080
+    environment:
+      - DB_HOST=db
+    depends_on:
+      - db
+    networks:
+      - open_ldap
+
 volumes:
   ldap_data:
   ldap_config:
+  db_data:
+
 networks:
   open_ldap:
+
   
