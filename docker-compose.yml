@@ -1,8 +1,12 @@
+version: '3.8'
+
 services:
   openldap:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: open_ldap
     hostname: openldap
-    image: osixia/openldap:latest
-    container_name: open_ldap 
     ports:
       - 389:389
       - 636:636
@@ -24,6 +28,22 @@ services:
       - ./php:/var/www/html
     networks:
       - open_ldap
+  
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    ports:
+      - "8080:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin 
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: 
+      - start-dev 
+      - --import-realm
+    volumes:
+      - /home/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+    networks:
+      - open_ldap
+  
 volumes:
   ldap_data:
   ldap_config:
