@@ -7,21 +7,23 @@ use App\LDAP\model\Repository\LDAPConnexion;
 
 class ControllerLDAP extends AbstractController{
 
+    public static $repertoire_choisie;
+
     public static function choixRepertoire(){
-        $repertoire_choisie = $_GET["dirOptions"];    
-        if(strcmp($repertoire_choisie,"Local") == 0){
+        self::$repertoire_choisie = $_GET["dirOptions"];    
+        if(strcmp(self::$repertoire_choisie,"Local") == 0){
             LDAPConnexion::toggleLocal();
         }else{
             LDAPConnexion::toogleIUT();
         }
-        self::afficheVue("authentification.php",["Pagetitle"=>"Authentification","directory"=>$repertoire_choisie]);
+        self::afficheVue("authentification.php",["Pagetitle"=>"Authentification","directory"=>self::$repertoire_choisie]);
     }
 
     public static function checkUser() {
         $ldap_login = $_GET["user"];
         $ldap_password = $_GET["pass"];
-        $ldap_searchfilter = "(objectClass=*)";
-        
+        $ldap_searchfilter = "(uid={$ldap_login})";
+        echo "search filter = ". $ldap_searchfilter;
         $ldap_conn = LDAPConnexion::getInstance();
         $baseDn = LDAPConnexion::getBaseDn(); 
 
@@ -31,17 +33,28 @@ class ControllerLDAP extends AbstractController{
         $search = ldap_search($ldap_conn, $baseDn, $ldap_searchfilter, array());
         
         $user_result = ldap_get_entries($ldap_conn, $search);
-        // on verifie que l’entree existe bien
         print_r($user_result);
+
+        // on verifie que l’entree existe bien
         $user_exist = $user_result["count"] == 1;
+
+        
         // si l’utilisateur existe bien,
         $passwd_ok = false;
         if($user_exist) {
-        $dn = "uid=".$ldap_login.",ou=Ann1,ou=Etudiants,ou=People,dc=info,dc=iutmontp,dc=univ-montp2,dc=fr";
+        // $dn = "uid=".$ldap_login.",ou=Ann1,ou=Etudiants,ou=People,dc=info,dc=iutmontp,dc=univ-montp2,dc=fr";
+        ldap_unbind($ldap_conn);
+        $dn = $user_result[0]["dn"];
+        echo $dn;
         $passwd_ok = ldap_bind(LDAPConnexion::getInstance(), $dn, $ldap_password);
         }
-
-        return $passwd_ok;
+        // Si l'utilisateur ou l'admin se sont connectés
+        if($passwd_ok) {
+            self::afficheVue("view.php",["Pagetitle"=>"Bienvenue","cheminVueBody"=>"bienvenue.php", "utilisateur"=>$ldap_login]);
+        }
+        else{
+            self::afficheVue("authentification.php",["Pagetitle"=> "Erreur de Connexion","directory"=>self::$repertoire_choisie, "errormessage"=>ldap_error($ldap_conn)]);
+        }
     }
     
     public static function listUsers() {

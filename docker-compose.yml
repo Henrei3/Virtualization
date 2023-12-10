@@ -1,7 +1,9 @@
 services:
   openldap:
     hostname: openldap
-    image: osixia/openldap:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
     container_name: open_ldap 
     ports:
       - 389:389
