@@ -28,7 +28,6 @@ services:
       - ./php:/var/www/html
     networks:
       - open_ldap
-<<<<<<< HEAD
   db:
     image: postgres:latest
     ports:
@@ -54,9 +53,6 @@ services:
     networks:
       - open_ldap
 
-  
-=======
->>>>>>> 86ca9da (api setup)
   keycloak:
     image: quay.io/keycloak/keycloak
     ports:
@@ -71,34 +67,6 @@ services:
       - /home/keycloak/realm.json:/opt/keycloak/data/import/realm.json
     networks:
       - open_ldap
-
-<<<<<<< HEAD
-=======
-      
-  db:
-    image: postgres:latest
-    volumes:
-      - db_data:/var/lib/postgresql/data
-      - ./api/logs.sql:/docker-entrypoint-initdb.d/init.sql
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=securepassword
-      - POSTGRES_DB=mydatabase
-    networks:
-      - open_ldap
-
-  api:
-    build: ./api
-    ports:
-      - 8080:8080
-    environment:
-      - DB_HOST=db
-    depends_on:
-      - db
-    networks:
-      - open_ldap
-
->>>>>>> 86ca9da (api setup)
 volumes:
   ldap_data:
   ldap_config:
