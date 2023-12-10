@@ -3,7 +3,7 @@
 
 # Function to check if Keycloak is up
 wait_for_keycloak() {
-  until $(curl --output /dev/null --silent --head --fail http://localhost:8080); do
+  until $(curl --output /dev/null --silent --head --fail http://localhost:8082); do
     printf '.'
     sleep 5
   done

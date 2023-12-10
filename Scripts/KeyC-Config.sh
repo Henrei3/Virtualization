@@ -1,7 +1,7 @@
 #!/bin/bash
 # KeyC_Config.sh
 
-KEYCLOAK_HOST_PORT=${1:-"localhost:8080"}
+KEYCLOAK_HOST_PORT=${1:-"localhost:8082"}
 echo
 echo "KEYCLOAK_HOST_PORT: $KEYCLOAK_HOST_PORT"
 echo
@@ -33,7 +33,7 @@ echo "==============="
 CLIENT_ID=$(curl -si -X POST "http://$KEYCLOAK_HOST_PORT/admin/realms/Virtulisation/clients" \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"clientId": "nextcloud", "directAccessGrantsEnabled": true, "redirectUris": ["http://127.0.0.1:8080//*"]}' \
+  -d '{"clientId": "nextcloud", "directAccessGrantsEnabled": true, "redirectUris": ["http://127.0.0.1:8082//*"]}' \
   | grep -oE '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}')
 
 echo "CLIENT_ID=$CLIENT_ID"
