@@ -43,10 +43,11 @@ class ControllerLDAP extends AbstractController{
         $passwd_ok = false;
         if($user_exist) {
         // $dn = "uid=".$ldap_login.",ou=Ann1,ou=Etudiants,ou=People,dc=info,dc=iutmontp,dc=univ-montp2,dc=fr";
-        ldap_unbind($ldap_conn);
         $dn = $user_result[0]["dn"];
-        echo $dn;
+        // Requete log utilisateur avec API REST
+        self::sendLogs($ldap_login,$dn);
         $passwd_ok = ldap_bind(LDAPConnexion::getInstance(), $dn, $ldap_password);
+        
         }
         // Si l'utilisateur ou l'admin se sont connectés
         if($passwd_ok) {
@@ -56,7 +57,37 @@ class ControllerLDAP extends AbstractController{
             self::afficheVue("authentification.php",["Pagetitle"=> "Erreur de Connexion","directory"=>self::$repertoire_choisie, "errormessage"=>ldap_error($ldap_conn)]);
         }
     }
-    
+    private static function sendLogs($username, $userDn){
+        $params = [
+            'user' => $username,
+            'dn'=> $userDn
+        ];
+        
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, "localhost:8080");
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . "kjlmopq",
+        ]);
+
+        $response = curl_exec($curl);
+
+        // Check for errors
+        if (curl_errno($curl)) {
+            echo 'Error: ' . curl_error($curl);
+        } else {
+            // Decode the JSON response
+            $responseData = json_decode($response, true);
+
+            // Output the generated text
+            echo $responseData['choices'][0]['text'];
+        }
+        // Close cURL session
+        curl_close($curl);
+    }
     public static function listUsers() {
         $ldap_conn = LDAPConnexion::getInstance();
         //On recherche toutes les entres du LDAP qui sont des personnes
@@ -74,5 +105,4 @@ class ControllerLDAP extends AbstractController{
         ldap_close(Conf::$ldap_conn);
     }
 }
-
 ?>
